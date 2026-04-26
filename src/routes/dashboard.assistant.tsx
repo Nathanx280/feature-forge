@@ -169,7 +169,7 @@ function AssistantPage() {
                   </div>
                 )}
                 <div
-                  className={`prose prose-sm max-w-[80%] rounded-2xl px-4 py-2.5 prose-invert prose-p:my-1 prose-pre:my-2 ${
+                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-xs [&_p]:my-1 [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-muted [&_pre]:p-3 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 ${
                     m.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "border border-border bg-card text-foreground"
