@@ -79,7 +79,10 @@ export const COMMANDS: CommandDef[] = [
         .select("command, created_at")
         .order("created_at", { ascending: false })
         .limit(5);
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       toast.message("Recent commands", {
         description: data?.map((d) => d.command).join(" · ") || "none yet",
       });
