@@ -1,39 +1,40 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
 import { COMMANDS } from "@/lib/commands";
-import { useNavigate } from "@tanstack/react-router";
-import { Activity, Command, Shield } from "lucide-react";
+import { Activity, Command, NotebookPen, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/")({
   component: Overview,
 });
 
-function Stat({ label, value, icon: Icon }: { label: string; value: string | number; icon: typeof Activity }) {
+function Stat({ label, value, icon: Icon, delay = 0 }: { label: string; value: string | number; icon: typeof Activity; delay?: number }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
-        <Icon className="h-4 w-4 text-primary" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold">{value}</div>
-      </CardContent>
-    </Card>
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}>
+      <Card className="overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-px" style={{ background: "var(--gradient-primary)" }} />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+          <Icon className="h-4 w-4 text-primary" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold">{value}</div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
 function Overview() {
-  const { user, roles } = useAuth();
   const navigate = useNavigate();
   const [commandCount, setCommandCount] = useState<number | null>(null);
+  const [noteCount, setNoteCount] = useState<number | null>(null);
   const [recent, setRecent] = useState<{ command: string; created_at: string }[]>([]);
 
   useEffect(() => {
-    if (!user) return;
     supabase
       .from("command_log")
       .select("command, created_at", { count: "exact" })
@@ -43,25 +44,30 @@ function Overview() {
         setRecent(data ?? []);
         setCommandCount(count ?? 0);
       });
-  }, [user]);
+    supabase
+      .from("notes")
+      .select("id", { count: "exact", head: true })
+      .then(({ count }) => setNoteCount(count ?? 0));
+  }, []);
 
-  const quick = COMMANDS.filter((c) => ["health-check", "ai-suggest", "audit-log"].includes(c.id));
+  const quick = COMMANDS.filter((c) => ["health-check", "ai-suggest", "new-note", "go-assistant"].includes(c.id));
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
-        <p className="text-sm text-muted-foreground">Welcome back. Here's what's happening.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
+        <p className="text-sm text-muted-foreground">Welcome to the public workspace. Everything is live.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Commands run" value={commandCount ?? "—"} icon={Command} />
-        <Stat label="Active roles" value={roles.length} icon={Shield} />
-        <Stat label="Status" value="Healthy" icon={Activity} />
+        <Stat label="Commands run" value={commandCount ?? "—"} icon={Command} delay={0} />
+        <Stat label="Notes on the wall" value={noteCount ?? "—"} icon={NotebookPen} delay={0.05} />
+        <Stat label="Status" value="Healthy" icon={Activity} delay={0.1} />
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
           <CardTitle>Quick actions</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
@@ -69,7 +75,7 @@ function Overview() {
             <Button
               key={cmd.id}
               variant="outline"
-              onClick={() => cmd.run({ navigate: (to) => navigate({ to }), userId: user?.id ?? null })}
+              onClick={() => cmd.run({ navigate: (to) => navigate({ to }) })}
             >
               {cmd.label}
             </Button>

@@ -10,20 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
-import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
+import { Route as DashboardNotesRouteImport } from './routes/dashboard.notes'
 import { Route as DashboardCommandsRouteImport } from './routes/dashboard.commands'
+import { Route as DashboardAssistantRouteImport } from './routes/dashboard.assistant'
+import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -36,9 +32,9 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardProfileRoute = DashboardProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const DashboardNotesRoute = DashboardNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardCommandsRoute = DashboardCommandsRouteImport.update({
@@ -46,60 +42,75 @@ const DashboardCommandsRoute = DashboardCommandsRouteImport.update({
   path: '/commands',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAssistantRoute = DashboardAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/assistant': typeof DashboardAssistantRoute
   '/dashboard/commands': typeof DashboardCommandsRoute
-  '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/notes': typeof DashboardNotesRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/assistant': typeof DashboardAssistantRoute
   '/dashboard/commands': typeof DashboardCommandsRoute
-  '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/notes': typeof DashboardNotesRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/assistant': typeof DashboardAssistantRoute
   '/dashboard/commands': typeof DashboardCommandsRoute
-  '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/notes': typeof DashboardNotesRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/dashboard'
+    | '/dashboard/analytics'
+    | '/dashboard/assistant'
     | '/dashboard/commands'
-    | '/dashboard/profile'
+    | '/dashboard/notes'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
+    | '/dashboard/analytics'
+    | '/dashboard/assistant'
     | '/dashboard/commands'
-    | '/dashboard/profile'
+    | '/dashboard/notes'
     | '/dashboard'
   id:
     | '__root__'
     | '/'
-    | '/auth'
     | '/dashboard'
+    | '/dashboard/analytics'
+    | '/dashboard/assistant'
     | '/dashboard/commands'
-    | '/dashboard/profile'
+    | '/dashboard/notes'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRouteWithChildren
 }
 
@@ -110,13 +121,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -133,11 +137,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/profile': {
-      id: '/dashboard/profile'
-      path: '/profile'
-      fullPath: '/dashboard/profile'
-      preLoaderRoute: typeof DashboardProfileRouteImport
+    '/dashboard/notes': {
+      id: '/dashboard/notes'
+      path: '/notes'
+      fullPath: '/dashboard/notes'
+      preLoaderRoute: typeof DashboardNotesRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/commands': {
@@ -147,18 +151,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCommandsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/assistant': {
+      id: '/dashboard/assistant'
+      path: '/assistant'
+      fullPath: '/dashboard/assistant'
+      preLoaderRoute: typeof DashboardAssistantRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/analytics': {
+      id: '/dashboard/analytics'
+      path: '/analytics'
+      fullPath: '/dashboard/analytics'
+      preLoaderRoute: typeof DashboardAnalyticsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
 interface DashboardRouteChildren {
+  DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
+  DashboardAssistantRoute: typeof DashboardAssistantRoute
   DashboardCommandsRoute: typeof DashboardCommandsRoute
-  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardNotesRoute: typeof DashboardNotesRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAnalyticsRoute: DashboardAnalyticsRoute,
+  DashboardAssistantRoute: DashboardAssistantRoute,
   DashboardCommandsRoute: DashboardCommandsRoute,
-  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardNotesRoute: DashboardNotesRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -168,7 +190,6 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRoute,
   DashboardRoute: DashboardRouteWithChildren,
 }
 export const routeTree = rootRouteImport

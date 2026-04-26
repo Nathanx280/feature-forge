@@ -10,12 +10,10 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { COMMANDS } from "@/lib/commands";
-import { useAuth } from "@/lib/auth";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -28,7 +26,7 @@ export function CommandPalette() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const groups = ["Core", "Dev", "AI", "Dashboard"] as const;
+  const groups = ["Navigate", "AI", "Notes", "Dev"] as const;
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
@@ -47,10 +45,7 @@ export function CommandPalette() {
                     key={cmd.id}
                     onSelect={async () => {
                       setOpen(false);
-                      await cmd.run({
-                        navigate: (to) => navigate({ to }),
-                        userId: user?.id ?? null,
-                      });
+                      await cmd.run({ navigate: (to) => navigate({ to }) });
                     }}
                   >
                     <span className="font-medium">{cmd.label}</span>

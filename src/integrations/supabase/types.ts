@@ -16,28 +16,61 @@ export type Database = {
     Tables: {
       command_log: {
         Row: {
+          client_id: string | null
           command: string
           created_at: string
           id: string
           payload: Json | null
           status: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          client_id?: string | null
           command: string
           created_at?: string
           id?: string
           payload?: Json | null
           status?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          client_id?: string | null
           command?: string
           created_at?: string
           id?: string
           payload?: Json | null
           status?: string
-          user_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          client_id: string
+          color: string
+          content: string
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          color?: string
+          content?: string
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          color?: string
+          content?: string
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

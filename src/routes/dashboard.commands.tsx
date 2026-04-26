@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/dashboard/commands")({
   component: CommandsPage,
@@ -17,28 +16,35 @@ interface LogEntry {
 }
 
 function CommandsPage() {
-  const { user } = useAuth();
   const [entries, setEntries] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("command_log")
-      .select("id, command, status, created_at")
-      .order("created_at", { ascending: false })
-      .limit(100)
-      .then(({ data }) => {
-        setEntries(data ?? []);
-        setLoading(false);
-      });
-  }, [user]);
+    const load = () =>
+      supabase
+        .from("command_log")
+        .select("id, command, status, created_at")
+        .order("created_at", { ascending: false })
+        .limit(100)
+        .then(({ data }) => {
+          setEntries((data ?? []) as LogEntry[]);
+          setLoading(false);
+        });
+    load();
+    const channel = supabase
+      .channel("commands-live")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "command_log" }, () => load())
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Command Log</h1>
-        <p className="text-sm text-muted-foreground">Audit trail of every command you've run.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Command Log</h1>
+        <p className="text-sm text-muted-foreground">Live audit trail of every command run on the platform.</p>
       </div>
       <Card>
         <CardHeader>
